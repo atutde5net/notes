@@ -1616,7 +1616,7 @@
             antiScreenshotActive = false;
         }
 
-        // ==================== 阅后即焚渲染 ====================
+        // ==================== 阅后即焚渲染（已移除返回主页按钮）====================
         function renderShareView() {
             app.innerHTML = `
             <div class="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -1624,13 +1624,6 @@
                     <div class="space-y-1">
                         <h1 class="text-4xl font-extrabold tracking-tighter bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">CloudNotes</h1>
                         <p class="text-[10px] uppercase tracking-[0.3em] text-orange-500 font-black">阅后即焚 | 分享解密</p>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <button onclick="window.location.href = window.location.origin + window.location.pathname" 
-                                class="text-xs text-slate-400 hover:text-white transition px-3 py-1 glass rounded-full" 
-                                title="返回主页">
-                            返回主页
-                        </button>
                     </div>
                 </header>
 
