@@ -2926,7 +2926,7 @@ console.log('Hello');
                     unlockBtn.classList.remove('share-gradient');
                     unlockBtn.classList.add('bg-gray-600', 'cursor-not-allowed');
                     
-                    // ===== 新增：启动防截图/录屏防护 =====
+                    // ===== 启动防截图/录屏防护 =====
                     applyAntiScreenshotProtection();
                     
                     // 准备焚毁动画（顺序焚毁）
@@ -3040,11 +3040,19 @@ console.log('Hello');
             }, 1000);
         }
 
+        // ========== 修复：焚毁动画开始后禁用所有鼠标交互，防止点击图片/链接中断 ==========
         // 开始顺序焚毁动画
         function startSequentialBurnAnimation() {
             if (isBurningActive || burningChars.length === 0) return;
             
             isBurningActive = true;
+            
+            // === 新增：禁用内容区域的鼠标交互，彻底防止点击图片/链接导致动画暂停 ===
+            const burningContent = document.getElementById('burningContent');
+            if (burningContent) {
+                burningContent.style.pointerEvents = 'none';
+            }
+            
             const burnNowBtn = document.getElementById('burnNowBtn');
             burnNowBtn.disabled = true;
             burnNowBtn.innerHTML = `<i class="fas fa-fire animate-spin"></i><span>焚毁中...</span>`;
@@ -3205,8 +3213,14 @@ console.log('Hello');
 
         // 完成焚毁动画
         function completeBurnAnimation() {
-            // ===== 新增：焚毁完成，移除防截图防护 =====
+            // ===== 移除防截图防护 =====
             removeAntiScreenshotProtection();
+            
+            // === 恢复鼠标交互（内容即将替换，也可不做，但为严谨恢复） ===
+            const burningContent = document.getElementById('burningContent');
+            if (burningContent) {
+                burningContent.style.pointerEvents = 'auto';
+            }
             
             // 移除焚毁光标
             if (burnCursor) {
