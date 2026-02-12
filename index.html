@@ -1677,7 +1677,7 @@
                 const texts = [];
                 for (let i = 0; i < 30; i++) {
                     const randomChar = Math.random().toString(36).substring(2, 5);
-                    texts.push(`📵 CLOUDNOTES 绝密 · 截屏追溯 ${sessionId} · ${timestamp} · ${randomChar}`);
+                    texts.push(`📵私密聊天`);
                 }
                 watermark.innerHTML = texts.map(t => `<span>${t}</span>`).join('');
 
@@ -1695,7 +1695,7 @@
                         const spans = watermark.querySelectorAll('span');
                         if (spans.length > 0) {
                             const idx = Math.floor(Math.random() * spans.length);
-                            spans[idx].textContent = `📵 截屏追溯 ${sessionId} · ${newTimestamp} · ${randomChars}`;
+                            spans[idx].textContent = `📵 私密聊天`;
                         }
                     }
                 }, 3000);
