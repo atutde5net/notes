@@ -636,58 +636,10 @@
             font-size: 0.75rem;
         }
 
-        /* ========== 防截图/录屏专用样式 ========== */
+        /* ========== 防截图/录屏专用样式（保留模糊，移除水印） ========== */
         .burn-blur {
             filter: blur(12px) !important;
             transition: filter 0.2s ease;
-        }
-
-        .burn-watermark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 999;
-            overflow: hidden;
-            color: rgba(255, 100, 100, 0.25);
-            font-size: 14px;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-            word-break: break-all;
-            user-select: none;
-            line-height: 1.5;
-            display: flex;
-            flex-wrap: wrap;
-            align-content: flex-start;
-            justify-content: flex-start;
-            opacity: 0.9;
-            text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .burn-watermark span {
-            display: inline-block;
-            margin: 8px 12px;
-            animation: watermarkFloat 8s infinite alternate;
-            transform-origin: center;
-        }
-
-        @keyframes watermarkFloat {
-            0% {
-                transform: rotate(-2deg) scale(1);
-                opacity: 0.2;
-            }
-
-            100% {
-                transform: rotate(2deg) scale(1.2);
-                opacity: 0.4;
-            }
-        }
-
-        .share-result-container {
-            position: relative;
         }
     </style>
 </head>
@@ -1598,9 +1550,8 @@
             document.getElementById('quickAccessBar').classList.remove('hidden');
         }
 
-        // ==================== 防截图/录屏专用函数 ====================
+        // ==================== 防截图/录屏专用函数（仅保留窗口模糊、阻止打印/截图快捷键，移除动态水印）====================
         let antiScreenshotActive = false;
-        let watermarkInterval = null;
 
         function applyAntiScreenshotProtection() {
             const shareResultDiv = document.querySelector('.share-result-container');
@@ -1662,45 +1613,6 @@
             };
             window.addEventListener('keydown', onKeyDown);
 
-            // 5. 添加动态水印（防截图追溯）
-            const burningContentParent = shareResultDiv.querySelector('.text-left.p-6');
-            if (burningContentParent && !document.getElementById('burnWatermark')) {
-                const watermark = document.createElement('div');
-                watermark.id = 'burnWatermark';
-                watermark.className = 'burn-watermark';
-
-                // 生成随机字符串 + 时间戳 + 会话标识
-                const sessionId = Math.random().toString(36).substring(2, 12);
-                const timestamp = new Date().toLocaleString('zh-CN', {
-                    hour12: false
-                });
-                const texts = [];
-                for (let i = 0; i < 30; i++) {
-                    const randomChar = Math.random().toString(36).substring(2, 5);
-                    texts.push(`📵私密聊天`);
-                }
-                watermark.innerHTML = texts.map(t => `<span>${t}</span>`).join('');
-
-                // 设置为绝对定位覆盖
-                burningContentParent.style.position = 'relative';
-                burningContentParent.appendChild(watermark);
-
-                // 水印内容动态变化（每3秒局部刷新）
-                watermarkInterval = setInterval(() => {
-                    if (watermark) {
-                        const newTimestamp = new Date().toLocaleString('zh-CN', {
-                            hour12: false
-                        });
-                        const randomChars = Math.random().toString(36).substring(2, 8);
-                        const spans = watermark.querySelectorAll('span');
-                        if (spans.length > 0) {
-                            const idx = Math.floor(Math.random() * spans.length);
-                            spans[idx].textContent = `📵 私密聊天`;
-                        }
-                    }
-                }, 3000);
-            }
-
             // 存储事件处理器以便移除
             window.__burnBlurHandler = onBlur;
             window.__burnFocusHandler = onFocus;
@@ -1728,11 +1640,6 @@
             if (window.__burnKeyHandler) {
                 window.removeEventListener('keydown', window.__burnKeyHandler);
             }
-
-            // 移除水印
-            const watermark = document.getElementById('burnWatermark');
-            if (watermark) watermark.remove();
-            if (watermarkInterval) clearInterval(watermarkInterval);
 
             // 移除模糊类
             document.getElementById('burningContent')?.classList.remove('burn-blur');
@@ -3095,7 +3002,7 @@ console.log('Hello');
                     unlockBtn.classList.remove('share-gradient');
                     unlockBtn.classList.add('bg-gray-600', 'cursor-not-allowed');
 
-                    // ===== 新增：启动防截图/录屏防护 =====
+                    // ===== 启动防截图/录屏防护（仅保留窗口模糊、快捷键拦截，无水印）=====
                     applyAntiScreenshotProtection();
 
                     // 准备焚毁动画（顺序焚毁）
@@ -3374,7 +3281,7 @@ console.log('Hello');
 
         // 完成焚毁动画
         function completeBurnAnimation() {
-            // ===== 新增：焚毁完成，移除防截图防护 =====
+            // ===== 焚毁完成，移除防截图防护 =====
             removeAntiScreenshotProtection();
 
             // 移除焚毁光标
