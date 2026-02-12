@@ -1504,6 +1504,29 @@
                     }
                 });
             }
+            
+            // ---------- 新增：禁止复制阅后即焚内容 ----------
+            // 直接在容器上应用 user-select: none 并阻止复制/右键/拖拽等事件
+            const burningContent = document.getElementById('burningContent');
+            if (burningContent) {
+                // CSS 禁止选择
+                burningContent.style.userSelect = 'none';
+                burningContent.style.webkitUserSelect = 'none';
+                burningContent.style.MozUserSelect = 'none';
+                burningContent.style.msUserSelect = 'none';
+                
+                // 阻止各种复制/剪切/右键/选择开始/拖拽事件
+                const preventDefault = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                };
+                burningContent.addEventListener('copy', preventDefault);
+                burningContent.addEventListener('cut', preventDefault);
+                burningContent.addEventListener('contextmenu', preventDefault);
+                burningContent.addEventListener('selectstart', preventDefault);
+                burningContent.addEventListener('dragstart', preventDefault);
+            }
         }
 
         // ==================== 视图切换 ====================
